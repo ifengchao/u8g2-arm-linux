@@ -10,8 +10,8 @@
 
 # C-SKY Linux:  csky-linux-gcc
 
-CC=arm-linux-gnueabi-gcc
-CXX=arm-linux-gnueabi-g++
+#CC=arm-linux-gnueabi-gcc
+#CXX=arm-linux-gnueabi-g++
 
 # IP Address of your PI
 PI=pi@raspberrypi.local

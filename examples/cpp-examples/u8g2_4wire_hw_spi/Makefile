@@ -10,8 +10,8 @@
 
 # C-SKY Linux:  csky-linux-gcc
 
-CC=arm-linux-gnueabi-gcc
-CXX=arm-linux-gnueabi-g++
+#CC=arm-linux-gnueabi-gcc
+#CXX=arm-linux-gnueabi-g++
 
 # IP Address of your PI
 PI=pi@raspberrypi.local
@@ -46,7 +46,7 @@ directories:
 
 $(TARGET):$(OBJ)
 	@echo Generating $(TARGET) ...
-	@$(CXX) -o $(OUTDIR)/$@ $(OBJ) $(LDIR) $(LIBS)
+	@$(CXX) -o $(OUTDIR)/$@ $(OBJ) $(LDIR) $(LIBS) -lwiringPi -lm -lrt -lpthread -lcrypt
 
 u8g2_4wire_hw_spi.cpp.o: u8g2_4wire_hw_spi.cpp
 	$(CXX) -c -o $@ $< $(CFLAGS) $(LDIR) $(LIBS)

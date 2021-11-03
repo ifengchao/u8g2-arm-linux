@@ -1,4 +1,5 @@
 #include "gpio.h"
+#include <wiringPi.h>
 
 #define GPIO_FILENAME_DEFINE(pin,field) char fileName[255] = {0}; \
         sprintf(fileName, "/sys/class/gpio/gpio%d/%s", pin, field);
@@ -47,6 +48,7 @@ static int readIntValueFromFile(char* fileName)
 
 int exportGPIOPin(int pin) 
 {
+	return 0;
     FILE* fp = fopen("/sys/class/gpio/export", "w+");
     if (fp != NULL) 
     {
@@ -63,6 +65,7 @@ int exportGPIOPin(int pin)
 
 int unexportGPIOPin(int pin) 
 {
+	return 0;
     FILE* fp = fopen("/sys/class/gpio/unexport", "w+");
     if (fp != NULL) 
     {
@@ -79,12 +82,20 @@ int unexportGPIOPin(int pin)
 
 int getGPIOValue(int pin) 
 {
+	int val = digitalRead(pin);
+        printf("read pin[%d] =[%d]\n", pin,val);
+	return val;
     GPIO_FILENAME_DEFINE(pin, "value")
     return readIntValueFromFile(fileName);
 }
 
 int setGPIOValue(int pin, int value) 
 {
+        printf("set pin[%d] =[%d]\n", pin,value);
+	pinMode(pin, OUTPUT) ;
+	digitalWrite(pin,  value) ;
+
+	return 0;
     static FILE* fp_gpio[255];
     if(fp_gpio[pin] != NULL)
     {
@@ -111,6 +122,11 @@ int setGPIOValue(int pin, int value)
 
 int setGPIODirection(int pin, int direction) 
 {
+	if(direction)
+		pinMode(pin, OUTPUT) ;
+	else
+		pinMode(pin, INPUT) ;
+	return 0;
     char directionStr[10];
     GPIO_FILENAME_DEFINE(pin, "direction")
     

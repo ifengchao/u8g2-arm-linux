@@ -1,10 +1,11 @@
 #include "u8g2port.h"
+#include <wiringPiSPI.h>
 
 static int i2c_device;
 static const char i2c_bus[] = "/dev/i2c-1";
 
 static int spi_device;
-static const char spi_bus[] = "/dev/spidev0.0";
+static const char spi_bus[] = "/dev/spidev1.0";
 
 uint8_t u8x8_arm_linux_gpio_and_delay(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, void *arg_ptr)
 {
@@ -43,7 +44,7 @@ uint8_t u8x8_arm_linux_gpio_and_delay(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int
         case U8X8_MSG_GPIO_AND_DELAY_INIT:  
             // Function which implements a delay, arg_int contains the amount of ms  
 
-            // printf("CLK:%d, DATA:%d, CS:%d, RST:%d, DC:%d\n", u8x8->pins[U8X8_PIN_SPI_CLOCK], u8x8->pins[U8X8_PIN_SPI_DATA], u8x8->pins[U8X8_PIN_CS], u8x8->pins[U8X8_PIN_RESET], u8x8->pins[U8X8_PIN_DC]);
+             printf("CLK:%d, DATA:%d, CS:%d, RST:%d, DC:%d\n", u8x8->pins[U8X8_PIN_SPI_CLOCK], u8x8->pins[U8X8_PIN_SPI_DATA], u8x8->pins[U8X8_PIN_CS], u8x8->pins[U8X8_PIN_RESET], u8x8->pins[U8X8_PIN_DC]);
             // printf("SDA:%d, SCL:%d\n", u8x8->pins[U8X8_PIN_I2C_DATA], u8x8->pins[U8X8_PIN_I2C_CLOCK]);
             
 	    // SPI Pins
@@ -64,6 +65,7 @@ uint8_t u8x8_arm_linux_gpio_and_delay(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int
                 exportGPIOPin(u8x8->pins[U8X8_PIN_CS]);
                 setGPIODirection(u8x8->pins[U8X8_PIN_CS], GPIO_OUT);
                 setGPIOValue(u8x8->pins[U8X8_PIN_CS], GPIO_HIGH);
+                //setGPIOValue(u8x8->pins[U8X8_PIN_CS], GPIO_LOW);
             }
 
             // 8080 mode
@@ -281,7 +283,9 @@ uint8_t u8x8_byte_arm_linux_hw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, v
     {
         case U8X8_MSG_BYTE_SEND:
             data = (uint8_t *)arg_ptr;
-            // printf("Buffering Data %d \n", arg_int);
+            printf("Buffering Data %d[%x] \n", arg_int, data);
+	    wiringPiSPIDataRW(1, arg_ptr, arg_int);
+	    break;
 
             while( arg_int > 0) 
             {
@@ -310,6 +314,11 @@ uint8_t u8x8_byte_arm_linux_hw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, v
             /*   1: clock active high, data out on rising edge, clock default value is zero, takover on falling edge */
             /*   2: clock active low, data out on rising edge */
             /*   3: clock active low, data out on falling edge */
+
+            printf("init SPI Device Mode Set\n");
+	    wiringPiSPISetup(1, 2*1000*1000);
+	    break;
+
             internal_spi_mode =  0;
             switch(u8x8->display_info->spi_mode) 
             {
@@ -319,7 +328,6 @@ uint8_t u8x8_byte_arm_linux_hw_spi(u8x8_t *u8x8, uint8_t msg, uint8_t arg_int, v
                 case 3: internal_spi_mode |= SPI_CPOL; internal_spi_mode |= SPI_CPHA; break;
             }
             // printf("SPI Device Mode Set\n");
-
             spi_device = openSPIDevice(spi_bus, internal_spi_mode, 8, 500000);
             if (spi_device  < 0 )
             {
