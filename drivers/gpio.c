@@ -49,7 +49,7 @@ static int readIntValueFromFile(char* fileName)
 int exportGPIOPin(int pin) 
 {
 	return 0;
-    FILE* fp = fopen("/sys/class/gpio/export", "w+");
+    FILE* fp = fopen("/sys/class/gpio/export", "w");
     if (fp != NULL) 
     {
         fprintf(fp, "%d", pin);
@@ -66,7 +66,7 @@ int exportGPIOPin(int pin)
 int unexportGPIOPin(int pin) 
 {
 	return 0;
-    FILE* fp = fopen("/sys/class/gpio/unexport", "w+");
+    FILE* fp = fopen("/sys/class/gpio/unexport", "w");
     if (fp != NULL) 
     {
         fprintf(fp, "%d", pin);
@@ -106,7 +106,7 @@ int setGPIOValue(int pin, int value)
     else
     {
         GPIO_FILENAME_DEFINE(pin, "value")
-        fp_gpio[pin] = fopen(fileName, "w+");
+        fp_gpio[pin] = fopen(fileName, "w");
         if (fp_gpio[pin] != NULL) 
         {
             fprintf(fp_gpio[pin], "%d", value);
